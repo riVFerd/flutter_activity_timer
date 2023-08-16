@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_activity_timer/presentation/router/app_router.dart';
+import 'package:flutter_activity_timer/presentation/theme/theme_constants.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,10 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Activity Timer',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF87CEFA)),
-        useMaterial3: true,
-      ),
+      theme: ThemeConstants.defaultTheme,
       onGenerateRoute: AppRouter().onGenerateRoute,
     );
   }
