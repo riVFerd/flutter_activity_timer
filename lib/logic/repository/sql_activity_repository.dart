@@ -4,11 +4,15 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SQLActivityRepository implements ActivityRepository {
-  static late final Database _db;
-  final tableName = 'activity';
+  static Database? _db;
+  final tableName = 'activities';
 
-  SQLActivityRepository() {
-    _initDatabase();
+  SQLActivityRepository._();
+
+  static Future<SQLActivityRepository> getRepository() async {
+    final repository = SQLActivityRepository._();
+    if (_db == null) await repository._initDatabase();
+    return repository;
   }
 
   Future<void> _initDatabase() async {
@@ -36,12 +40,12 @@ class SQLActivityRepository implements ActivityRepository {
 
   @override
   Future<void> close() async {
-    _db.close();
+    _db!.close();
   }
 
   @override
   Future<void> deleteActivity(int id) async {
-    _db.delete(
+    _db!.delete(
       tableName,
       where: 'activityId = ?',
       whereArgs: [id],
@@ -51,14 +55,14 @@ class SQLActivityRepository implements ActivityRepository {
   @override
   Future<List<Activity>> getActivities() async {
     late List<Activity> activites;
-    List<Map<String, dynamic>> maps = await _db.query(tableName);
+    List<Map<String, dynamic>> maps = await _db!.query(tableName);
     activites = maps.map((activity) => Activity.fromMap(activity)).toList();
     return activites;
   }
 
   @override
   Future<void> insertActivity(Activity activity) async {
-    _db.insert(
+    _db!.insert(
       tableName,
       activity.toMap(),
     );
@@ -66,7 +70,7 @@ class SQLActivityRepository implements ActivityRepository {
 
   @override
   Future<void> updateActivity(Activity activity) async {
-    _db.update(
+    _db!.update(
       tableName,
       activity.toMap(),
       where: 'activityId = ?',
