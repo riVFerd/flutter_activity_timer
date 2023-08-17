@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_activity_timer/logic/models/activity.dart';
 import 'package:flutter_activity_timer/presentation/theme/theme_constants.dart';
 import 'package:flutter_activity_timer/presentation/widgets/activity_card.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../logic/bloc/activities_bloc.dart';
 import '../widgets/input_activity_modal.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -11,6 +12,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<ActivitiesBloc>(context).add(ActivitiesLoad());
+
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -62,18 +65,48 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: activities.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 8,
-                              ),
-                              child: ActivityCard(
-                                activity: activities[index],
-                              ),
-                            );
+                        child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+                          builder: (context, state) {
+                            if (state is ActivitiesLoaded) {
+                              final activities = state.activities;
+                              if (activities.isEmpty) {
+                                return const Center(
+                                  child: Text(
+                                    'No activities yet!',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return ListView.builder(
+                                itemCount: activities.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 8,
+                                    ),
+                                    child: ActivityCard(
+                                      activity: activities[index],
+                                    ),
+                                  );
+                                },
+                              );
+                            } else if (state is ActivitiesLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (state is ActivitiesError) {
+                              return Center(
+                                child: Text(state.message),
+                              );
+                            } else {
+                              return const Center(
+                                child: Text('Something went wrong!'),
+                              );
+                            }
                           },
                         ),
                       ),
@@ -119,47 +152,3 @@ class _CustomFabLoc extends FloatingActionButtonLocation {
     );
   }
 }
-
-// dummy activities data
-List<Activity> activities = [
-  Activity(
-    activityId: 0,
-    activityName: 'Coding',
-    goalTime: 18000, // 5 hours in seconds
-    timeSpent: 13000,
-    lastTrackedDate: DateTime.now(),
-    colorId: 0,
-  ),
-  Activity(
-    activityId: 1,
-    activityName: 'Reading',
-    goalTime: 7200, // 2 hours in seconds
-    timeSpent: 3000,
-    lastTrackedDate: DateTime.now(),
-    colorId: 1,
-  ),
-  Activity(
-    activityId: 2,
-    activityName: 'Exercising',
-    goalTime: 3600, // 1 hour in seconds
-    timeSpent: 1800,
-    lastTrackedDate: DateTime.now(),
-    colorId: 2,
-  ),
-  Activity(
-    activityId: 3,
-    activityName: 'Writing',
-    goalTime: 10800, // 3 hours in seconds
-    timeSpent: 1000,
-    lastTrackedDate: DateTime.now(),
-    colorId: 3,
-  ),
-  Activity(
-    activityId: 4,
-    activityName: 'Cooking',
-    goalTime: 5400, // 1.5 hours in seconds
-    timeSpent: 2000,
-    lastTrackedDate: DateTime.now(),
-    colorId: 4,
-  ),
-];
