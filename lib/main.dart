@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Activity Timer',
       theme: ThemeConstants.defaultTheme,
       onGenerateRoute: AppRouter().onGenerateRoute,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_activity_timer/logic/models/activity.dart';
 import 'package:flutter_activity_timer/presentation/theme/theme_constants.dart';
 import 'package:flutter_activity_timer/presentation/widgets/activity_card.dart';
 
+import '../widgets/input_activity_modal.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
   static const routeName = '/';
@@ -83,7 +85,16 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: ThemeConstants.darkBlue,
+              builder: (context) {
+                return const InputActivityModal();
+              },
+            );
+          },
           backgroundColor: ThemeConstants.lightBrown,
           shape: const CircleBorder(),
           child: const Icon(
