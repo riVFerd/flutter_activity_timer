@@ -7,8 +7,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../logic/models/activity.dart';
 
 class InputActivityModal extends StatefulWidget {
+  final Activity? activity;
+
   const InputActivityModal({
     super.key,
+    this.activity,
   });
 
   @override
@@ -19,6 +22,107 @@ class _InputActivityModalState extends State<InputActivityModal> {
   TimeOfDay? _selectedTime;
   String? _inputActivityName;
   int _selectedColorId = 0;
+  bool _isEditing = false;
+
+  /// Either insert or update activity based on [widget.activity]
+  void _submitActivity() {
+    if (_inputActivityName != null && _selectedTime != null) {
+      if (_isEditing) {
+        final activity = widget.activity!.copyWith(
+          activityName: _inputActivityName,
+          goalTime: Activity.toSecond(_selectedTime!),
+          colorId: _selectedColorId,
+        );
+        BlocProvider.of<ActivitiesBloc>(context).add(
+          ActivitiesUpdate(activity),
+        );
+      } else {
+        final activity = Activity(
+          activityId: DateTime.now().millisecondsSinceEpoch,
+          activityName: _inputActivityName!,
+          goalTime: Activity.toSecond(_selectedTime!),
+          timeSpent: 0,
+          lastTrackedDate: DateTime.now(),
+          colorId: _selectedColorId,
+        );
+        BlocProvider.of<ActivitiesBloc>(context).add(
+          ActivitiesAdd(activity),
+        );
+      }
+      Navigator.of(context).pop();
+    }
+  }
+
+  void _deleteActivity() {
+    if (_isEditing) {
+      showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (context) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: ThemeConstants.darkBlue,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Are you sure you want to delete this activity?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Theme(
+                  data: ThemeData(
+                    textButtonTheme: TextButtonThemeData(
+                      style: TextButton.styleFrom(
+                        backgroundColor: ThemeConstants.dark,
+                        foregroundColor: ThemeConstants.light,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            Colors.red,
+                          ),
+                        ),
+                        onPressed: () {
+                          BlocProvider.of<ActivitiesBloc>(context).add(
+                            ActivitiesDelete(widget.activity!),
+                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Yes'),
+                      ),
+                      const SizedBox(width: 16),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('No'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
 
   Future<void> _selectTime() async {
     final TimeOfDay? picked = await showTimePicker(
@@ -35,6 +139,20 @@ class _InputActivityModalState extends State<InputActivityModal> {
       setState(() {
         _selectedTime = picked;
       });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.activity != null) {
+      _selectedTime = TimeOfDay(
+        hour: widget.activity!.goalTime ~/ 3600,
+        minute: (widget.activity!.goalTime % 3600) ~/ 60,
+      );
+      _inputActivityName = widget.activity!.activityName;
+      _selectedColorId = widget.activity!.colorId;
+      _isEditing = true;
     }
   }
 
@@ -59,9 +177,9 @@ class _InputActivityModalState extends State<InputActivityModal> {
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
           ),
-          const Text(
-            'Add New Activity',
-            style: TextStyle(
+          Text(
+            (_isEditing) ? 'Edit Activity' : 'Add Activity',
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
               color: Colors.white,
@@ -82,6 +200,7 @@ class _InputActivityModalState extends State<InputActivityModal> {
                 borderSide: BorderSide(color: Colors.white),
               ),
             ),
+            controller: TextEditingController(text: _inputActivityName),
             onChanged: (value) {
               _inputActivityName = value;
             },
@@ -147,35 +266,59 @@ class _InputActivityModalState extends State<InputActivityModal> {
             ),
           ),
           const SizedBox(height: 16),
-          IconButton.filled(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ThemeConstants.dark,
-              foregroundColor: ThemeConstants.light,
-            ),
-            icon: const Icon(
-              Icons.check_sharp,
-              size: 36,
-            ),
-            onPressed: () {
-              if (_inputActivityName != null && _selectedTime != null) {
-                final activity = Activity(
-                  activityId: DateTime.now().millisecondsSinceEpoch,
-                  activityName: _inputActivityName!,
-                  goalTime:
-                      _selectedTime!.hour * 3600 + _selectedTime!.minute * 60,
-                  timeSpent: 0,
-                  lastTrackedDate: DateTime.now(),
-                  colorId: _selectedColorId,
-                );
-                BlocProvider.of<ActivitiesBloc>(context).add(
-                  ActivitiesAdd(activity),
-                );
-                Navigator.of(context).pop();
-              }
-            },
-          )
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Visibility(
+                visible: _isEditing,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 32),
+                  child: _CustomIconButton(
+                    backgroundColor: Colors.red,
+                    foregroundColor: ThemeConstants.light,
+                    icon: const Icon(Icons.delete_forever),
+                    onPressed: _deleteActivity,
+                  ),
+                ),
+              ),
+              _CustomIconButton(
+                icon: Icon(
+                  (_isEditing) ? Icons.edit_rounded : Icons.check_sharp,
+                ),
+                onPressed: _submitActivity,
+              ),
+            ],
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _CustomIconButton extends StatelessWidget {
+  const _CustomIconButton({
+    required this.onPressed,
+    required this.icon,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  final Icon icon;
+  final void Function()? onPressed;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filled(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor ?? ThemeConstants.dark,
+        foregroundColor: foregroundColor ?? ThemeConstants.light,
+      ),
+      icon: icon,
+      padding: const EdgeInsets.all(16),
+      iconSize: 32,
+      onPressed: onPressed,
     );
   }
 }

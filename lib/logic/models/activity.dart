@@ -1,12 +1,18 @@
+import 'package:flutter/material.dart';
+
 class Activity {
   final int activityId;
   final String activityName;
+
+  /// Time in seconds
   final int goalTime;
+  
+  /// Time in seconds
   final int timeSpent;
   final DateTime lastTrackedDate;
   final int colorId;
 
-  Activity({
+  const Activity({
     required this.activityId,
     required this.activityName,
     required this.goalTime,
@@ -35,5 +41,28 @@ class Activity {
       'lastTrackedDate': lastTrackedDate.toIso8601String(),
       'colorId': colorId,
     };
+  }
+
+  Activity copyWith({
+    int? activityId,
+    String? activityName,
+    int? goalTime,
+    int? timeSpent,
+    DateTime? lastTrackedDate,
+    int? colorId,
+  }) {
+    return Activity(
+      activityId: activityId ?? this.activityId,
+      activityName: activityName ?? this.activityName,
+      goalTime: goalTime ?? this.goalTime,
+      timeSpent: timeSpent ?? this.timeSpent,
+      lastTrackedDate: lastTrackedDate ?? this.lastTrackedDate,
+      colorId: colorId ?? this.colorId,
+    );
+  }
+
+  /// Convert [TimeOfDay] to seconds
+  static int toSecond(TimeOfDay time) {
+    return time.hour * 3600 + time.minute * 60;
   }
 }
