@@ -6,7 +6,7 @@ class Activity {
 
   /// Time in seconds
   final int goalTime;
-  
+
   /// Time in seconds
   final int timeSpent;
   final DateTime lastTrackedDate;
@@ -64,5 +64,19 @@ class Activity {
   /// Convert [TimeOfDay] to seconds
   static int toSecond(TimeOfDay time) {
     return time.hour * 3600 + time.minute * 60;
+  }
+
+  /// Get ratio percentage of time spent and goal time in reverse.
+  /// The value is between 0.0 and 1.0.
+  /// The more time spent, the lower the percentage.
+  double get ratioPercentage {
+    return (goalTime - timeSpent) / goalTime;
+  }
+
+  /// Get percentage of time spent and goal time in reverse as a string.
+  /// The value is between 00.0 and 100.0.
+  /// The more time spent, the lower the percentage.
+  String get percentage {
+    return (ratioPercentage * 100).toStringAsFixed(1);
   }
 }

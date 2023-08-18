@@ -4,6 +4,7 @@ import 'package:flutter_activity_timer/presentation/widgets/activity_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../logic/bloc/activities_bloc.dart';
+import '../../logic/bloc/activity_timer_bloc.dart';
 import '../widgets/input_activity_modal.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -65,49 +66,56 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
-                          builder: (context, state) {
-                            if (state is ActivitiesLoaded) {
-                              final activities = state.activities;
-                              if (activities.isEmpty) {
-                                return const Center(
-                                  child: Text(
-                                    'No activities yet!',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                );
-                              }
-                              return ListView.builder(
-                                itemCount: activities.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 8,
-                                    ),
-                                    child: ActivityCard(
-                                      activity: activities[index],
-                                    ),
-                                  );
-                                },
-                              );
-                            } else if (state is ActivitiesLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else if (state is ActivitiesError) {
-                              return Center(
-                                child: Text(state.message),
-                              );
-                            } else {
-                              return const Center(
-                                child: Text('Something went wrong!'),
-                              );
+                        child: BlocListener<ActivityTimerBloc, ActivityTimerState>(
+                          listener: (context, state) {
+                            if (state is ActivityTimerPaused) {
+                              BlocProvider.of<ActivitiesBloc>(context).add(ActivitiesLoad());
                             }
                           },
+                          child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+                            builder: (context, state) {
+                              if (state is ActivitiesLoaded) {
+                                final activities = state.activities;
+                                if (activities.isEmpty) {
+                                  return const Center(
+                                    child: Text(
+                                      'No activities yet!',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return ListView.builder(
+                                  itemCount: activities.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 8,
+                                      ),
+                                      child: ActivityCard(
+                                        activity: activities[index],
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else if (state is ActivitiesLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else if (state is ActivitiesError) {
+                                return Center(
+                                  child: Text(state.message),
+                                );
+                              } else {
+                                return const Center(
+                                  child: Text('Something went wrong!'),
+                                );
+                              }
+                            },
+                          ),
                         ),
                       ),
                     ],

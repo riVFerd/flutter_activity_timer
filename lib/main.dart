@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_activity_timer/logic/bloc/activities_bloc.dart';
+import 'package:flutter_activity_timer/logic/bloc/activity_timer_bloc.dart';
 import 'package:flutter_activity_timer/presentation/router/app_router.dart';
 import 'package:flutter_activity_timer/presentation/theme/theme_constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,8 +14,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ActivitiesBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ActivitiesBloc()),
+        BlocProvider(create: (context) => ActivityTimerBloc())
+      ],
       child: MaterialApp(
         title: 'Activity Timer',
         theme: ThemeConstants.defaultTheme,
