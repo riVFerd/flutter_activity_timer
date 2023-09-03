@@ -20,3 +20,5 @@ final class ActivityTimerTick extends ActivityTimerEvent {
 
   ActivityTimerTick({required this.activity});
 }
+
+final class ActivityTimerReset extends ActivityTimerEvent {}

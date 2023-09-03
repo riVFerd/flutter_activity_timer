@@ -26,6 +26,8 @@ class ActivityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<ActivityTimerBloc>(context).add(ActivityTimerReset());
+
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -43,31 +45,31 @@ class ActivityScreen extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Hero(
-                  tag: activity.activityId,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 12.0),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.0),
-                      color: CardConstants.backgroundColors[activity.colorId],
-                    ),
-                    child: BlocBuilder<ActivityTimerBloc, ActivityTimerState>(
-                      builder: (context, state) {
-                        Activity updatedActivity = activity.copyWith(
-                          timeSpent: state is ActivityTimerRunning || state is ActivityTimerPaused
-                              ? state.activity?.timeSpent
-                              : activity.timeSpent,
-                        );
-                        return Column(
-                          children: [
-                            Flexible(
-                              flex: 3,
-                              child: Stack(
-                                children: [
-                                  Center(
-                                    child: Transform.scale(
-                                      scale: 8,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 12.0),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    color: CardConstants.backgroundColors[activity.colorId],
+                  ),
+                  child: BlocBuilder<ActivityTimerBloc, ActivityTimerState>(
+                    builder: (context, state) {
+                      Activity updatedActivity = activity.copyWith(
+                        timeSpent: state is ActivityTimerInitial
+                            ? activity.timeSpent
+                            : state.activity?.timeSpent,
+                      );
+                      return Column(
+                        children: [
+                          Flexible(
+                            flex: 3,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Transform.scale(
+                                    scale: 8,
+                                    child: Hero(
+                                      tag: activity.activityId,
                                       child: CircularProgressIndicator(
                                         value: updatedActivity.ratioPercentage,
                                         valueColor:
@@ -78,47 +80,47 @@ class ActivityScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  Center(
-                                    child: Text(
-                                      '${updatedActivity.percentage}%',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                ),
+                                Center(
+                                  child: Text(
+                                    '${updatedActivity.percentage}%',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Spacer(),
+                          Flexible(
+                            child: IconButton(
+                              onPressed: () {
+                                if (state is ActivityTimerRunning) {
+                                  _stopTimer(context, updatedActivity);
+                                } else {
+                                  _startTimer(context, updatedActivity);
+                                }
+                              },
+                              icon: Icon(
+                                state is ActivityTimerRunning
+                                    ? Icons.pause
+                                    : Icons.play_arrow,
+                              ),
+                              color: Colors.white,
+                              iconSize: 64,
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                  ThemeConstants.darkBlue,
+                                ),
                               ),
                             ),
-                            const Spacer(),
-                            Flexible(
-                              child: IconButton(
-                                onPressed: () {
-                                  if (state is ActivityTimerRunning) {
-                                    _stopTimer(context, updatedActivity);
-                                  } else {
-                                    _startTimer(context, updatedActivity);
-                                  }
-                                },
-                                icon: Icon(
-                                  state is ActivityTimerRunning
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
-                                ),
-                                color: Colors.white,
-                                iconSize: 64,
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    ThemeConstants.darkBlue,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
