@@ -38,9 +38,5 @@ class ActivityTimerBloc extends Bloc<ActivityTimerEvent, ActivityTimerState> {
     on<ActivityTimerTick>((event, emit) {
       emit(ActivityTimerRunning(activity: event.activity));
     });
-    on<ActivityTimerReset>((event, emit) {
-      timer?.cancel();
-      emit(ActivityTimerInitial());
-    });
   }
 }
