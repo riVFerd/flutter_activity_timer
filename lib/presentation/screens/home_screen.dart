@@ -66,10 +66,12 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: BlocListener<ActivityTimerBloc, ActivityTimerState>(
+                        child:
+                            BlocListener<ActivityTimerBloc, ActivityTimerState>(
                           listener: (context, state) {
                             if (state is ActivityTimerPaused) {
-                              BlocProvider.of<ActivitiesBloc>(context).add(ActivitiesLoad());
+                              BlocProvider.of<ActivitiesBloc>(context)
+                                  .add(ActivitiesLoad());
                             }
                           },
                           child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
