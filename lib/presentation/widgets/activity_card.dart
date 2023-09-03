@@ -57,8 +57,7 @@ class ActivityCard extends StatelessWidget {
                   tag: activity.activityId,
                   child: CircularProgressIndicator(
                     value: activity.ratioPercentage,
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                     backgroundColor: Colors.white.withOpacity(0.3),
                     strokeWidth: 8,
                   ),

@@ -26,8 +26,6 @@ class ActivityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<ActivityTimerBloc>(context).add(ActivityTimerReset());
-
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -55,9 +53,7 @@ class ActivityScreen extends StatelessWidget {
                   child: BlocBuilder<ActivityTimerBloc, ActivityTimerState>(
                     builder: (context, state) {
                       Activity updatedActivity = activity.copyWith(
-                        timeSpent: state is ActivityTimerInitial
-                            ? activity.timeSpent
-                            : state.activity?.timeSpent,
+                        timeSpent: state.activity?.timeSpent ?? activity.timeSpent,
                       );
                       return Column(
                         children: [
@@ -72,8 +68,7 @@ class ActivityScreen extends StatelessWidget {
                                       tag: activity.activityId,
                                       child: CircularProgressIndicator(
                                         value: updatedActivity.ratioPercentage,
-                                        valueColor:
-                                            const AlwaysStoppedAnimation<Color>(
+                                        valueColor: const AlwaysStoppedAnimation<Color>(
                                           Colors.white,
                                         ),
                                         strokeWidth: 4,
@@ -105,9 +100,7 @@ class ActivityScreen extends StatelessWidget {
                                 }
                               },
                               icon: Icon(
-                                state is ActivityTimerRunning
-                                    ? Icons.pause
-                                    : Icons.play_arrow,
+                                state is ActivityTimerRunning ? Icons.pause : Icons.play_arrow,
                               ),
                               color: Colors.white,
                               iconSize: 64,

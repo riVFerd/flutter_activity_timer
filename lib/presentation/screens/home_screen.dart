@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_activity_timer/logic/models/activity.dart';
 import 'package:flutter_activity_timer/presentation/theme/theme_constants.dart';
 import 'package:flutter_activity_timer/presentation/widgets/activity_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,18 +67,25 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child:
-                            BlocListener<ActivityTimerBloc, ActivityTimerState>(
+                        child: BlocListener<ActivityTimerBloc, ActivityTimerState>(
                           listener: (context, state) {
-                            if (state is ActivityTimerPaused) {
-                              BlocProvider.of<ActivitiesBloc>(context)
-                                  .add(ActivitiesLoad());
+                            if (state is ActivityTimerInitial || state is ActivityTimerRunning) {
+                              BlocProvider.of<ActivitiesBloc>(context).add(ActivitiesLoad());
                             }
                           },
                           child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
                             builder: (context, state) {
                               if (state is ActivitiesLoaded) {
                                 final activities = state.activities;
+                                bool isTimerRunning = false;
+
+                                if (context.read<ActivityTimerBloc>().state is ActivityTimerRunning) {
+                                  isTimerRunning = true;
+                                  final runningActivity = context.read<ActivityTimerBloc>().state.activity;
+                                  activities.removeWhere((activity) => activity.activityId == runningActivity!.activityId);
+                                  activities.insert(0, runningActivity!);
+                                }
+
                                 if (activities.isEmpty) {
                                   return const Center(
                                     child: Text(
@@ -89,20 +97,8 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   );
                                 }
-                                return ListView.builder(
-                                  itemCount: activities.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 24,
-                                        vertical: 8,
-                                      ),
-                                      child: ActivityCard(
-                                        activity: activities[index],
-                                      ),
-                                    );
-                                  },
-                                );
+
+                                return displayActivityCards(activities, isTimerRunning);
                               } else if (state is ActivitiesLoading) {
                                 return const Center(
                                   child: CircularProgressIndicator(),
@@ -147,6 +143,29 @@ class HomeScreen extends StatelessWidget {
         ),
         floatingActionButtonLocation: const _CustomFabLoc(),
       ),
+    );
+  }
+
+  ListView displayActivityCards(List<Activity> activities, bool isTimerRunning) {
+    return ListView.builder(
+      itemCount: activities.length,
+      itemBuilder: (context, index) {
+        return AbsorbPointer(
+          absorbing: (isTimerRunning && index != 0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 8,
+            ),
+            child: Opacity(
+              opacity: (isTimerRunning && index != 0) ? 0.5 : 1.0,
+              child: ActivityCard(
+                activity: activities[index],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_activity_timer/logic/repository/activity_repository.dart';
 import 'package:flutter_activity_timer/logic/repository/sql_activity_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../models/activity.dart';
 
@@ -33,7 +33,7 @@ class ActivityTimerBloc extends Bloc<ActivityTimerEvent, ActivityTimerState> {
       ActivityRepository repository =
           await SQLActivityRepository.getRepository();
       await repository.updateActivity(event.activity);
-      emit(ActivityTimerPaused(activity: event.activity));
+      emit(ActivityTimerInitial());
     });
     on<ActivityTimerTick>((event, emit) {
       emit(ActivityTimerRunning(activity: event.activity));
