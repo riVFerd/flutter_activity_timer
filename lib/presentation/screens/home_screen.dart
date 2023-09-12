@@ -67,53 +67,61 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: BlocListener<ActivityTimerBloc, ActivityTimerState>(
-                          listener: (context, state) {
-                            if (state is ActivityTimerInitial || state is ActivityTimerRunning) {
-                              BlocProvider.of<ActivitiesBloc>(context).add(ActivitiesLoad());
-                            }
-                          },
-                          child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
-                            builder: (context, state) {
-                              if (state is ActivitiesLoaded) {
-                                final activities = state.activities;
-                                bool isTimerRunning = false;
-
-                                if (context.read<ActivityTimerBloc>().state is ActivityTimerRunning) {
-                                  isTimerRunning = true;
-                                  final runningActivity = context.read<ActivityTimerBloc>().state.activity;
-                                  activities.removeWhere((activity) => activity.activityId == runningActivity!.activityId);
-                                  activities.insert(0, runningActivity!);
+                        child: Column(
+                          children: [
+                            BlocBuilder<ActivityTimerBloc, ActivityTimerState>(
+                              builder: (context, state) {
+                                if (state is ActivityTimerRunning) {
+                                  return ActivityCard(activity: state.activity!);
+                                } else {
+                                  return Container();
                                 }
+                              },
+                            ),
+                            Expanded(
+                              child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+                                builder: (context, state) {
+                                  print('IS TIMER RUNNING : ${context.read<ActivityTimerBloc>().state}');
+                                  if (state is ActivitiesLoaded) {
+                                    final activities = state.activities;
+                                    bool isTimerRunning = false;
 
-                                if (activities.isEmpty) {
-                                  return const Center(
-                                    child: Text(
-                                      'No activities yet!',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  );
-                                }
+                                    if (context.read<ActivityTimerBloc>().state is ActivityTimerRunning) {
+                                      isTimerRunning = true;
+                                      final runningActivity = context.read<ActivityTimerBloc>().state.activity;
+                                      activities.removeWhere((activity) => activity.activityId == runningActivity!.activityId);
+                                    }
 
-                                return displayActivityCards(activities, isTimerRunning);
-                              } else if (state is ActivitiesLoading) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              } else if (state is ActivitiesError) {
-                                return Center(
-                                  child: Text(state.message),
-                                );
-                              } else {
-                                return const Center(
-                                  child: Text('Something went wrong!'),
-                                );
-                              }
-                            },
-                          ),
+                                    if (activities.isEmpty) {
+                                      return const Center(
+                                        child: Text(
+                                          'No activities yet!',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    return displayActivityCards(activities, isTimerRunning);
+                                  } else if (state is ActivitiesLoading) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  } else if (state is ActivitiesError) {
+                                    return Center(
+                                      child: Text(state.message),
+                                    );
+                                  } else {
+                                    return const Center(
+                                      child: Text('Something went wrong!'),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -151,14 +159,14 @@ class HomeScreen extends StatelessWidget {
       itemCount: activities.length,
       itemBuilder: (context, index) {
         return AbsorbPointer(
-          absorbing: (isTimerRunning && index != 0),
+          absorbing: (isTimerRunning),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 8,
             ),
             child: Opacity(
-              opacity: (isTimerRunning && index != 0) ? 0.5 : 1.0,
+              opacity: (isTimerRunning) ? 0.5 : 1.0,
               child: ActivityCard(
                 activity: activities[index],
               ),

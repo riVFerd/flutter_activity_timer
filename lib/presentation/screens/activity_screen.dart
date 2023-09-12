@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_activity_timer/logic/bloc/activities_bloc.dart';
 import 'package:flutter_activity_timer/presentation/theme/card_constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,15 +14,13 @@ class ActivityScreen extends StatelessWidget {
   static const routeName = '/activity';
 
   void _startTimer(BuildContext context, Activity activity) {
-    BlocProvider.of<ActivityTimerBloc>(context).add(
-      ActivityTimerStarted(activity: activity),
-    );
+    BlocProvider.of<ActivityTimerBloc>(context).add(ActivityTimerStarted(activity: activity));
+    BlocProvider.of<ActivitiesBloc>(context).add(ActivitiesLoad());
   }
 
   void _stopTimer(BuildContext context, Activity activity) {
-    BlocProvider.of<ActivityTimerBloc>(context).add(
-      ActivityTimerStopped(activity: activity),
-    );
+    BlocProvider.of<ActivityTimerBloc>(context).add(ActivityTimerStopped(activity: activity));
+    BlocProvider.of<ActivitiesBloc>(context).add(ActivitiesLoad());
   }
 
   @override
