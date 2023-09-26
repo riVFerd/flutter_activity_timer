@@ -84,7 +84,7 @@ class ActivityScreen extends StatelessWidget {
                                   ),
                                   Center(
                                     child: Text(
-                                      '${updatedActivity.percentage}%',
+                                      '${updatedActivity.hours}:${updatedActivity.minutes}:${updatedActivity.seconds}',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 32,

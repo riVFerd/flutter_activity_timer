@@ -79,4 +79,23 @@ class Activity {
   String get percentage {
     return (ratioPercentage * 100).toStringAsFixed(1);
   }
+
+
+  /// Get remaining time from [timeSpent] and [goalTime].
+  /// The more time spent, the lower the remaining time.
+  int get hours {
+    return (goalTime - timeSpent) ~/ 3600;
+  }
+
+  /// Get remaining time from [timeSpent] and [goalTime].
+  /// The more time spent, the lower the remaining time.
+  int get minutes {
+    return (goalTime - timeSpent) % 3600 ~/ 60;
+  }
+
+  /// Get remaining time from [timeSpent] and [goalTime].
+  /// The more time spent, the lower the remaining time.
+  int get seconds {
+    return (goalTime - timeSpent) % 3600 % 60;
+  }
 }
