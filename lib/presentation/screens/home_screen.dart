@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_activity_timer/logic/models/activity.dart';
 import 'package:flutter_activity_timer/presentation/theme/theme_constants.dart';
 import 'package:flutter_activity_timer/presentation/widgets/activity_card.dart';
+import 'package:flutter_activity_timer/presentation/widgets/auth_modal.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../logic/bloc/activities_bloc.dart';
@@ -25,12 +26,33 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Today Activities',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Today Activities',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => const AuthModal(),
+                    ),
+                    child: Container(
+                      height: 48,
+                      width: 48,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100.0),
+                        color: ThemeConstants.darkBlue,
+                      ),
+                    ),
+                  )
+                ],
               ),
               Expanded(
                 child: Container(

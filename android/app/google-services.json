@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "249365761277",
+    "project_id": "activity-timer-cd52c",
+    "storage_bucket": "activity-timer-cd52c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:249365761277:android:0ae8270df0d66e30304294",
+        "android_client_info": {
+          "package_name": "com.example.flutter_activity_timer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh4kHE11J1PyX26rFbAXccND6kTJiWD8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
