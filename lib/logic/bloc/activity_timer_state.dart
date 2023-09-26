@@ -1,18 +1,27 @@
 part of 'activity_timer_bloc.dart';
 
 @immutable
-sealed class ActivityTimerState {
+abstract class ActivityTimerState extends Equatable {
   final Activity? activity;
 
   const ActivityTimerState({this.activity});
+
+  @override
+  List<Object?> get props => [activity];
 }
 
-final class ActivityTimerInitial extends ActivityTimerState {}
+class ActivityTimerInitial extends ActivityTimerState {}
 
-final class ActivityTimerRunning extends ActivityTimerState {
+class ActivityTimerRunning extends ActivityTimerState {
   const ActivityTimerRunning({required super.activity});
+
+  @override
+  List<Object?> get props => [activity];
 }
 
-final class ActivityTimerPaused extends ActivityTimerState {
+class ActivityTimerPaused extends ActivityTimerState {
   const ActivityTimerPaused({required super.activity});
+
+  @override
+  List<Object?> get props => [activity];
 }

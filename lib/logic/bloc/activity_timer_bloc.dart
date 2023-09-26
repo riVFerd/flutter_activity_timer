@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_activity_timer/logic/repository/activity_repository.dart';
 import 'package:flutter_activity_timer/logic/repository/sql_activity_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equatable/equatable.dart';
 
 import '../models/activity.dart';
 
@@ -30,13 +31,16 @@ class ActivityTimerBloc extends Bloc<ActivityTimerEvent, ActivityTimerState> {
     });
     on<ActivityTimerStopped>((event, emit) async {
       timer?.cancel();
-      ActivityRepository repository =
-          await SQLActivityRepository.getRepository();
+      ActivityRepository repository = await SQLActivityRepository.getRepository();
       await repository.updateActivity(event.activity);
-      emit(ActivityTimerInitial());
+      emit(ActivityTimerPaused(activity: event.activity));
     });
     on<ActivityTimerTick>((event, emit) {
       emit(ActivityTimerRunning(activity: event.activity));
+    });
+    on<ActivityTimerReset>((event, emit) {
+      timer?.cancel();
+      emit(ActivityTimerInitial());
     });
   }
 }
