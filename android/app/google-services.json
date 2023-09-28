@@ -12,7 +12,20 @@
           "package_name": "com.example.flutter_activity_timer"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "249365761277-vjlfqv5nn06tb4ak2pf3vf0gfb94gdrv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_activity_timer",
+            "certificate_hash": "278af23a64efb4b95cb21bb2598a78a75e775593"
+          }
+        },
+        {
+          "client_id": "249365761277-759q0c60vp854vmdch775pesk35g2r9v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAh4kHE11J1PyX26rFbAXccND6kTJiWD8I"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "249365761277-759q0c60vp854vmdch775pesk35g2r9v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

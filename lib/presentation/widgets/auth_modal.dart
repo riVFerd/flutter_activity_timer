@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_activity_timer/presentation/theme/theme_constants.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthModal extends StatefulWidget {
   const AuthModal({super.key});
@@ -35,9 +37,35 @@ class _AuthModalState extends State<AuthModal> {
       );
       _showSnackbar('Signed up successfully!');
     }
-    // its suppose to be okay since all async calls are done (awaited)
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop();
+    setState(() => _isLoading = false);
+  }
+
+  void _loginGoogle() async {
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+      if (googleUser == null) {
+        // User canceled Google sign-in.
+        _showSnackbar('Google sign-in canceled.');
+        return;
+      }
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      await _auth.signInWithCredential(credential);
+      _showSnackbar('Login with Google successfully!');
+    } catch (e) {
+      _showSnackbar(e.toString());
+    }
     setState(() => _isLoading = false);
   }
 
@@ -53,43 +81,47 @@ class _AuthModalState extends State<AuthModal> {
   @override
   Widget build(BuildContext context) {
     if (_auth.currentUser != null) {
-      return AnimatedPadding(
-        padding: MediaQuery.of(context).viewInsets,
-        duration: const Duration(milliseconds: 100),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          margin: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            color: ThemeConstants.darkBlue,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Signed in as ${_auth.currentUser!.email}',
-                style: const TextStyle(color: Colors.white),
-              ),
-              TextButton(
-                onPressed: () {
-                  _auth.signOut();
-                  _showSnackbar('Signed out successfully!');
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Sign Out',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return _authenticated(context);
     }
 
     return _authForm(context);
+  }
+
+  Widget _authenticated(BuildContext context) {
+    return AnimatedPadding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 32.0),
+      duration: const Duration(milliseconds: 100),
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          color: ThemeConstants.darkBlue,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Signed in as ${_auth.currentUser!.email}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            TextButton(
+              onPressed: () {
+                _auth.signOut();
+                _showSnackbar('Signed out successfully!');
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Sign Out',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _authForm(BuildContext context) {
@@ -199,6 +231,28 @@ class _AuthModalState extends State<AuthModal> {
                     color: Colors.white,
                   ),
                 ),
+              ),
+              const Divider(
+                thickness: 2,
+              ),
+              const Text(
+                'Or Login with: ',
+                style: TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton.icon(
+                    onPressed: () => _loginGoogle(),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(ThemeConstants.light),
+                      foregroundColor: MaterialStateProperty.all(ThemeConstants.dark),
+                    ),
+                    icon: const Icon(FontAwesomeIcons.google),
+                    label: const Text('Google'),
+                  ),
+                ],
               ),
             ],
           ),
