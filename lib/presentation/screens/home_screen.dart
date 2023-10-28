@@ -19,137 +19,141 @@ class HomeScreen extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          padding: const EdgeInsets.all(12.0),
-          width: double.infinity,
-          color: ThemeConstants.light,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Today Activities',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () => showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => const AuthModal(),
-                    ),
-                    child: Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100.0),
-                        color: ThemeConstants.darkBlue,
+        body: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
+          child: Container(
+            padding: const EdgeInsets.all(12.0),
+            width: double.infinity,
+            color: ThemeConstants.light,
+            height: MediaQuery.of(context).size.height * 0.95,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Today Activities',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
-                ],
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 12.0),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    color: ThemeConstants.darkBlue,
-                  ),
-                  child: Column(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 42,
-                          vertical: 16,
+                    InkWell(
+                      onTap: () => showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const AuthModal(),
+                      ),
+                      child: Container(
+                        height: 48,
+                        width: 48,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100.0),
+                          color: ThemeConstants.darkBlue,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Activity',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 12.0),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12.0),
+                      color: ThemeConstants.darkBlue,
+                    ),
+                    child: Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 42,
+                            vertical: 16,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Activity',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            Icon(
-                              Icons.percent,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ],
+                              Icon(
+                                Icons.percent,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            BlocBuilder<ActivityTimerBloc, ActivityTimerState>(
-                              builder: (context, state) {
-                                if (state is ActivityTimerRunning) {
-                                  return ActivityCard(activity: state.activity!);
-                                } else {
-                                  return Container();
-                                }
-                              },
-                            ),
-                            Expanded(
-                              child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+                        Expanded(
+                          child: Column(
+                            children: [
+                              BlocBuilder<ActivityTimerBloc, ActivityTimerState>(
                                 builder: (context, state) {
-                                  if (state is ActivitiesLoaded) {
-                                    final activities = state.activities;
-                                    bool isTimerRunning = false;
-
-                                    if (context.read<ActivityTimerBloc>().state is ActivityTimerRunning) {
-                                      isTimerRunning = true;
-                                      final runningActivity = context.read<ActivityTimerBloc>().state.activity;
-                                      activities.removeWhere((activity) => activity.activityId == runningActivity!.activityId);
-                                    }
-
-                                    if (activities.isEmpty) {
-                                      return const Center(
-                                        child: Text(
-                                          'No activities yet!',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                      );
-                                    }
-
-                                    return displayActivityCards(activities, isTimerRunning);
-                                  } else if (state is ActivitiesLoading) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  } else if (state is ActivitiesError) {
-                                    return Center(
-                                      child: Text(state.message),
-                                    );
+                                  if (state is ActivityTimerRunning) {
+                                    return ActivityCard(activity: state.activity!);
                                   } else {
-                                    return const Center(
-                                      child: Text('Something went wrong!'),
-                                    );
+                                    return Container();
                                   }
                                 },
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                child: BlocBuilder<ActivitiesBloc, ActivitiesState>(
+                                  builder: (context, state) {
+                                    if (state is ActivitiesLoaded) {
+                                      final activities = state.activities;
+                                      bool isTimerRunning = false;
+
+                                      if (context.read<ActivityTimerBloc>().state is ActivityTimerRunning) {
+                                        isTimerRunning = true;
+                                        final runningActivity = context.read<ActivityTimerBloc>().state.activity;
+                                        activities.removeWhere((activity) => activity.activityId == runningActivity!.activityId);
+                                      }
+
+                                      if (activities.isEmpty) {
+                                        return const Center(
+                                          child: Text(
+                                            'No activities yet!',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        );
+                                      }
+
+                                      return displayActivityCards(activities, isTimerRunning);
+                                    } else if (state is ActivitiesLoading) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else if (state is ActivitiesError) {
+                                      return Center(
+                                        child: Text(state.message),
+                                      );
+                                    } else {
+                                      return const Center(
+                                        child: Text('Something went wrong!'),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         floatingActionButton: FloatingActionButton(

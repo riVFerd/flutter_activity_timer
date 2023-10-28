@@ -158,138 +158,145 @@ class _InputActivityModalState extends State<InputActivityModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-        left: 24,
-        right: 24,
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: 4,
-            width: 64,
-            margin: const EdgeInsets.only(bottom: 8),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-            ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            left: 24,
+            right: 24,
           ),
-          Text(
-            (_isEditing) ? 'Edit Activity' : 'Add Activity',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-            decoration: const InputDecoration(
-              labelText: 'Activity Name',
-              labelStyle: TextStyle(color: Colors.white),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 4,
+                width: 64,
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
+              Text(
+                (_isEditing) ? 'Edit Activity' : 'Add Activity',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            controller: TextEditingController(text: _inputActivityName),
-            onChanged: (value) {
-              _inputActivityName = value;
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 8,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Goal Time : ${_selectedTime?.hour ?? 0} h ${_selectedTime?.minute ?? 0} m',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+              const SizedBox(height: 16),
+              TextField(
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Activity Name',
+                  labelStyle: TextStyle(color: Colors.white),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () => _selectTime(),
-                  child: const Text(
-                    'Set Time',
-                    style: TextStyle(
-                      color: ThemeConstants.dark,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(
-                CardConstants.backgroundColors.length,
-                (index) {
-                  return GestureDetector(
-                    onTap: () => setState(() {
-                      _selectedColorId = index;
-                    }),
-                    child: Container(
-                      margin: EdgeInsets.only(
-                        left: index == 0 ? 0 : 8,
-                      ),
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        border: (_selectedColorId == index)
-                            ? Border.all(
-                                color: ThemeConstants.darkBlue,
-                                width: 8,
-                              )
-                            : null,
-                        color: CardConstants.backgroundColors[index],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  );
+                controller: TextEditingController(text: _inputActivityName),
+                onChanged: (value) {
+                  _inputActivityName = value;
                 },
               ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Visibility(
-                visible: _isEditing,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 32),
-                  child: _CustomIconButton(
-                    backgroundColor: Colors.red,
-                    foregroundColor: ThemeConstants.light,
-                    icon: const Icon(Icons.delete_forever),
-                    onPressed: _deleteActivity,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 8,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Goal Time : ${_selectedTime?.hour ?? 0} h ${_selectedTime?.minute ?? 0} m',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => _selectTime(),
+                      child: const Text(
+                        'Set Time',
+                        style: TextStyle(
+                          color: ThemeConstants.dark,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(
+                    CardConstants.backgroundColors.length,
+                    (index) {
+                      return GestureDetector(
+                        onTap: () => setState(() {
+                          _selectedColorId = index;
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            left: index == 0 ? 0 : 8,
+                          ),
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            border: (_selectedColorId == index)
+                                ? Border.all(
+                                    color: ThemeConstants.darkBlue,
+                                    width: 8,
+                                  )
+                                : null,
+                            color: CardConstants.backgroundColors[index],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
-              _CustomIconButton(
-                icon: Icon(
-                  (_isEditing) ? Icons.edit_rounded : Icons.check_sharp,
-                ),
-                onPressed: _submitActivity,
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Visibility(
+                    visible: _isEditing,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 32),
+                      child: _CustomIconButton(
+                        backgroundColor: Colors.red,
+                        foregroundColor: ThemeConstants.light,
+                        icon: const Icon(Icons.delete_forever),
+                        onPressed: _deleteActivity,
+                      ),
+                    ),
+                  ),
+                  _CustomIconButton(
+                    icon: Icon(
+                      (_isEditing) ? Icons.edit_rounded : Icons.check_sharp,
+                    ),
+                    onPressed: _submitActivity,
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
